@@ -1,0 +1,14 @@
+{% extends "product/base.html" %}
+
+{% block content %}
+
+	<p>Holdings</p>
+	<ul>
+		{% for holding in holdings  %}
+		<li> {{holding}}</li>
+		{% empty %}
+		<li> no holding </li>
+		{% endfor %}
+	</ul>
+
+{% endblock content %}
