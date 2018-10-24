@@ -22,14 +22,18 @@ class Holding(models.Model):
 	volumes = models.FloatField()
 	channel = models.ForeignKey(Channel, on_delete=models.DO_NOTHING)
 	def __str__(self):
-		return str(self.product)+str(self.volumes)+str(self.channel)
+		return str(self.product)+'\t'+str(self.volumes)+'\t'+str(self.channel)
+
+
 class Waterbill(models.Model):
 	product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
 	channel = models.ForeignKey(Channel, on_delete=models.DO_NOTHING)
+	volumes = models.FloatField()
 	DIRECTION_CHOICE = (
 		(u'B', u'Buy'),
 		(u'S', u'Sell'),
 	)
+	
 	direction = models.CharField(max_length=100, choices = DIRECTION_CHOICE)
 	price = models.FloatField()
 	add_date = models.DateTimeField()
