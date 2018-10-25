@@ -12,6 +12,16 @@ class Product(models.Model):
 	def __str__(self):
 		return self.name
 
+		
+		
+class DailyPrice(models.Model):
+	product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+	price = models.FloatField()
+	date = models.DateTimeField()
+
+
+
+
 class Channel(models.Model):
 	name = models.CharField(max_length = 999)
 	def __str__(self):
@@ -27,13 +37,13 @@ class Holding(models.Model):
 
 class Waterbill(models.Model):
 	product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
-	channel = models.ForeignKey(Channel, on_delete=models.DO_NOTHING)
-	volumes = models.FloatField()
+	channel = models.ForeignKey(Channel, on_delete=models.DO_NOTHING)	
 	DIRECTION_CHOICE = (
 		(u'B', u'Buy'),
 		(u'S', u'Sell'),
 	)
 	
 	direction = models.CharField(max_length=100, choices = DIRECTION_CHOICE)
+	volumes = models.FloatField()
 	price = models.FloatField()
 	add_date = models.DateTimeField()
