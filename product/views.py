@@ -2,14 +2,33 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import Holding, Product, Channel
+from .models import Holding, Product, Channel, DailyPrice
 from .forms import WaterbillForm
 
 # Create your views here.
 
+
+class shizhi:
+	def __init__(self, holding, dailyprice):
+		self.holding = holding
+		self.dp = dailyprice
+		self.mv = holding.volumes * dailyprice
+
+	def __str__(self):
+		return str(self.holding.product)+'\t'+ str(self.holding.volumes)+'\t净值:'+str(self.dp)+'\t市值:'+str(self.mv)	
+
+
 def index(request):
 	holdings = Holding.objects.all()
-	context = { 'holdings':holdings }
+	#context = { 'holdings':holdings }
+	total = 0
+	allholdingsz =[]
+	for holding in holdings:
+		dp = DailyPrice.objects.filter(product=holding.product).order_by('date')
+		sz = shizhi(holding, dp[0].price)
+		allholdingsz.append(sz)
+		total = total + sz.mv
+	context = { 'allholdingsz':allholdingsz }
 	return render(request, 'product/index.html', context)
 	
 def addwaterbill(request):
