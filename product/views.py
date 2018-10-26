@@ -5,6 +5,7 @@ from django.urls import reverse
 from .models import Holding, Product, Channel, DailyPrice
 from .forms import WaterbillForm
 
+import json
 # Create your views here.
 
 
@@ -23,12 +24,15 @@ def index(request):
 	#context = { 'holdings':holdings }
 	total = 0
 	allholdingsz =[]
+	piedatalist = []
 	for holding in holdings:
 		dp = DailyPrice.objects.filter(product=holding.product).order_by('date')
 		sz = shizhi(holding, dp[0].price)
 		allholdingsz.append(sz)
+		piedatalist.append({'value':sz.mv, 'name':str(holding.product)})
+		print(piedatalist)
 		total = total + sz.mv
-	context = { 'allholdingsz':allholdingsz }
+	context = { 'allholdingsz':allholdingsz , 'total' : total, 'piedatalist':json.dumps(piedatalist)}
 	return render(request, 'product/index.html', context)
 	
 def addwaterbill(request):
