@@ -10,9 +10,9 @@
 		<li> no holding </li>
 		{% endfor %}
 	</ul>
-	<p>total:{{total}}{{piedatalist}}</p>
+	<p>total:{{total}}</p>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="width:400px;height:300px;"></div>
+    <div id="main" style="width:1200px;height:600px;"></div>
     <!-- ECharts单文件引入 -->
     <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
     <script type="text/javascript">
@@ -47,13 +47,37 @@
 				    title: {
 						show:true,
 						fontSize : 15,
-						text: '数据测试'
+						text: '资产配置比例'
+						
+					},
+					tooltip : {  
+						trigger: 'item',  
+						formatter: "{b}: {c}({d}%) "  
+					},
+
+					series: [{
+						type: 'pie',
+						radius: '65%',
+						center: ['50%', '50%'],
+						label: {
+							normal: {
+								show: true,
+								formatter: 'test{b}: {c}({d}%)'
 							},
-						series: [{
-							type: 'pie',
-							radius: '55%',
-							data:kv
-						}]
+							
+						},
+						data:kv,
+						itemStyle:{ 
+						normal:{ 
+							  label:{ 
+								show: true,
+								position : 'outer',									
+								formatter: '{b} : {c} ({d}%)' 
+							  }, 
+							  labelLine :{show:true} 
+							} 
+						} 
+					}]
 
 
 				};

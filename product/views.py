@@ -13,11 +13,25 @@ class shizhi:
 	def __init__(self, holding, dailyprice):
 		self.holding = holding
 		self.dp = dailyprice
-		self.mv = holding.volumes * dailyprice
+		self.mv = float('%.3f' % (holding.volumes * dailyprice.price))
+		
 
 	def __str__(self):
-		return str(self.holding.product)+'\t'+ str(self.holding.volumes)+'\t净值:'+str(self.dp)+'\t市值:'+str(self.mv)	
+		return str(self.holding.product)+'\t'+ str(self.holding.volumes)+'份\t'+str(self.holding.channel) + '\t'+ str(self.dp.date.date())+'\t净值:'+str(self.dp.price)+'\t市值:'+str(self.mv)	
 
+def aggregate_by_product(szlist):
+	piedata = {}
+	for sz in szlist:
+		print(sz)
+		if str(sz.holding.product) in piedata:
+			piedata[str(sz.holding.product)] += sz.mv
+		else:
+			piedata[str(sz.holding.product)] = sz.mv
+	print(piedata)
+	piedatalist=[]
+	for k in piedata:
+		piedatalist.append({'value':piedata[k], 'name':k})
+	return piedatalist
 
 def index(request):
 	holdings = Holding.objects.all()
@@ -27,11 +41,12 @@ def index(request):
 	piedatalist = []
 	for holding in holdings:
 		dp = DailyPrice.objects.filter(product=holding.product).order_by('date')
-		sz = shizhi(holding, dp[0].price)
+		print(holding.product)
+		sz = shizhi(holding, dp[0])
 		allholdingsz.append(sz)
-		piedatalist.append({'value':sz.mv, 'name':str(holding.product)})
-		print(piedatalist)
+		#piedatalist.append({'value':sz.mv, 'name':str(holding.product)})
 		total = total + sz.mv
+	piedatalist = aggregate_by_product(allholdingsz)
 	context = { 'allholdingsz':allholdingsz , 'total' : total, 'piedatalist':json.dumps(piedatalist)}
 	return render(request, 'product/index.html', context)
 	

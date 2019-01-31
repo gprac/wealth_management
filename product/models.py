@@ -18,6 +18,8 @@ class DailyPrice(models.Model):
 	product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
 	price = models.FloatField()
 	date = models.DateTimeField()
+	def __str__(self):
+		return self.product.name
 
 
 
