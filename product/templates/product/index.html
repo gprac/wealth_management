@@ -2,14 +2,24 @@
 
 {% block content %}
 
-	<p>Holdings</p>
-	<ul>
-		{% for holding in allholdingsz  %}
-		<li> {{holding}}</li>
-		{% empty %}
-		<li> no holding </li>
+	<table>
+		<thead>
+			<tr>
+				<caption>持仓列表</caption>
+				<th>名称</th>
+				<th>金额</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for holdingsz in allholdingsz  %}
+			<tr>
+				<td>{{ holdingsz.holding.product }}</td>
+				<td>{{ holdingsz.mv }}</td>
+			</tr>
 		{% endfor %}
-	</ul>
+		</tbody>
+		<tfoot></tfoot>
+	</table>
 	<p>total:{{total}}</p>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
     <div id="main" style="width:1200px;height:600px;"></div>
@@ -72,7 +82,8 @@
 							  label:{ 
 								show: true,
 								position : 'outer',									
-								formatter: '{b} : {c} ({d}%)' 
+								//formatter: '{b} : {c} ({d}%)' 
+								formatter: '{b} ({d}%)'
 							  }, 
 							  labelLine :{show:true} 
 							} 

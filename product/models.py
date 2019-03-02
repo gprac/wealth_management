@@ -49,3 +49,5 @@ class Waterbill(models.Model):
 	volumes = models.FloatField()
 	price = models.FloatField()
 	add_date = models.DateTimeField()
+
+
