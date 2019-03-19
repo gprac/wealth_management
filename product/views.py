@@ -40,7 +40,7 @@ def index(request):
 	allholdingsz =[]
 	piedatalist = []
 	for holding in holdings:
-		dp = DailyPrice.objects.filter(product=holding.product).order_by('date')
+		dp = DailyPrice.objects.filter(product=holding.product).order_by('-date')
 		print(holding.product)
 		sz = shizhi(holding, dp[0])
 		allholdingsz.append(sz)

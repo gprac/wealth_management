@@ -3,6 +3,7 @@
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
+import datetime
 
 def get_url(url, params=None, proxies=None):
     rsp = requests.get(url, params=params, proxies=proxies)
@@ -28,23 +29,58 @@ def get_fund_data(code, start='', end=''):
 
 
 
+
 conn = sqlite3.connect('db.sqlite3')
 cursor = conn.cursor()
 tablenames = cursor.execute("select name from sqlite_master where type = 'table' order by name").fetchall()
 print(tablenames)
-products = cursor.execute("select id, code, type from product_product").fetchall()
 
-yfdvalue = get_fund_data('000968', '2019-03-18', '2019-03-18')
-#for row in products:
-#	if row[2] == 'F':
-#		print(row[1])
-mysqlstr = 'replace into product_dailyprice(product_id, price, date ) values(5,'+str(yfdvalue[0]['NetAssetValue'])+',datetime(\''+ str(yfdvalue[0]['Date'])+'\'))' 
-print(mysqlstr)
-cursor.execute(mysqlstr)
-#tablestruct = cursor.execute('PRAGMA table_info(product_dailyprice)').fetchall()
-#print(tablestruct)
+now = datetime.datetime.now()
+oneday = datetime.timedelta(days=1)
+day = now
+datelist=[]
+for i in range(2):	
+	day = day - oneday
+	yesterday = datetime.datetime(day.year, day.month, day.day, 0, 0, 0)
+	datelist.append("%s-%s-%s"%(yesterday.year, yesterday.month, yesterday.day))
+print(datelist)
+
+products = cursor.execute("select id, code, type from product_product").fetchall()
+for row in products:
+	if row[2] == 'F':
+		code = row[1]
+		productid = row[0]
+		pricesql = "select product_id, date, price from product_dailyprice where product_id=" + str(productid) + " and date= datetime('"+datelist[0] + "')"
+		dailyprice = cursor.execute(pricesql).fetchall()
+		if len(dailyprice) > 0:
+			continue
+		else:
+			print('code=',code)
+			#mysqlstr = 'delete from product_dailyprice where product_id='+code
+			#cursor.execute(mysqlstr)
+			for i in range(2):
+				print(datelist[i])
+				fundvalue = get_fund_data(code, datelist[i], datelist[i])
+				if len(fundvalue)>0:
+					mysqlstr = 'replace into product_dailyprice(product_id, price, date ) values('+ str(productid) +','+str(fundvalue[0]['NetAssetValue'])+',datetime(\''+ str(fundvalue[0]['Date'])+'\'))' 
+					print(mysqlstr)
+					cursor.execute(mysqlstr)
+				else:
+					pass
+
+
+
+
+
+
+#mysqlstr = 'replace into product_dailyprice(product_id, price, date ) values(5,'+str(fundvalue[0]['NetAssetValue'])+',datetime(\''+ str(fundvalue[0]['Date'])+'\'))' 
+#print(mysqlstr)
+#cursor.execute(mysqlstr)
+tablestruct = cursor.execute('PRAGMA table_info(product_dailyprice)').fetchall()
+print(tablestruct)
 conn.commit()
-products = cursor.execute("select * from product_dailyprice where product_id=5").fetchall()
+#products = cursor.execute("select * from product_dailyprice where product_id=5").fetchall()
+products = cursor.execute("select * from product_dailyprice").fetchall()
 print(products)
 
 
